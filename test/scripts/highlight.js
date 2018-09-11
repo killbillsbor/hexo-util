@@ -26,7 +26,7 @@ function gutter(start, end) {
   var result = gutterStart;
 
   for (var i = start; i <= end; i++) {
-    result += '<div class="line">' + i + '</div>';
+    result += '<span class="line">' + i + '</span><br>';
   }
 
   result += gutterEnd;
@@ -49,7 +49,7 @@ function code(str, lang) {
   var result = codeStart;
 
   for (var i = 0, len = lines.length; i < len; i++) {
-    result += '<div class="line">' + lines[i] + '</div>';
+    result += '<span class="line">' + lines[i] + '</span><br>';
   }
 
   result += codeEnd;
@@ -265,6 +265,39 @@ describe('highlight', function() {
     result.should.include('class="line">violets');
     result.should.include('class="line marked">sugar');
     result.should.include('class="line">and');
+    validateHtmlAsync(result, done);
+  });
+
+  it('hljs compatibility - with lines', (done) => {
+    var str = [
+      'function (a) {',
+      '    if (a > 3)',
+      '        return true;',
+      '    return false;',
+      '}'
+    ].join('\n');
+    var result = highlight(str, {hljs: true, lang: 'javascript' });
+    result.should.include(gutterStart);
+    result.should.include(codeStart);
+    result.should.include('code class="hljs javascript"');
+    result.should.include('class="hljs-function"');
+    result.should.include(gutter(1, 5));
+    validateHtmlAsync(result, done);
+  });
+
+  it('hljs compatibility - no lines', (done) => {
+    var str = [
+      'function (a) {',
+      '    if (a > 3)',
+      '        return true;',
+      '    return false;',
+      '}'
+    ].join('\n');
+    var result = highlight(str, {hljs: true, gutter: false, lang: 'javascript' });
+    result.should.not.include(gutterStart);
+    result.should.not.include(codeStart);
+    result.should.include('code class="hljs javascript"');
+    result.should.include('class="hljs-function"');
     validateHtmlAsync(result, done);
   });
 });
